@@ -1,0 +1,42 @@
+# Arguments to configurate the use of GUIDE #
+
+source "./config/pipeline_arguments.txt"
+
+# Parameters
+k=12
+
+#=====================================DO NOT MODIFY AFTER THAT=====================================
+
+# Directories
+data_dir="./data/GUIDE"
+out_dir="$results_dir/GUIDE"
+
+# Parameters strings
+function check_parameters() {
+    if (( ${#parameters_values[@]} ))
+    then
+        parameters=".$(IFS=. ; echo "${parameters_values[*]}")"
+    else
+        parameters=""
+    fi
+    echo $parameters
+}
+parameters_values=()
+
+if ! $use_filters
+then
+    ## SNP list
+    parameters_values+=("$(basename $snp_path .txt)")
+fi
+
+## Final string
+parameters=$(check_parameters)
+
+# Output
+## Preprocessing
+zscore=$data_dir/$prefix.effect_sizes_matrix$parameters.csv
+
+## Running
+factors="$out_dir/$prefix.factors_matrix.k$k$parameters.csv"
+loadings="$out_dir/$prefix.loadings_matrix.k$k$parameters.csv"
+pve="$out_dir/$prefix.variance.k$k$parameters.csv"

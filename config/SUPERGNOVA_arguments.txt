@@ -1,0 +1,27 @@
+# Arguments to configurate the use of SUPERGNOVA #
+
+source "./config/pipeline_arguments.txt"
+
+# Parameters
+extrapolate_pos=true
+bfiles_name="1G_hg38_EUR"
+
+#=====================================DO NOT MODIFY AFTER THAT=====================================
+
+# Directories
+data_dir="./data/SUPERGNOVA"
+out_dir="$results_dir/SUPERGNOVA"
+
+# Files
+pos_map="$data_dir/genetic_map_hg38_withX.txt.gz"
+
+# Output
+## Preprocessing
+sumstat_in="$data_dir/sumstats/@.txt"
+partition="$data_dir/partition/partition.chr@.bed"
+bfiles="$data_dir/bfiles/$bfiles_name.chr@"
+description="$data_dir/$prefix.description.txt"
+
+## Summary
+sumstat_out="$out_dir/output/@"
+summary="$out_dir/$prefix.summary.tsv"

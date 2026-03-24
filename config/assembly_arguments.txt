@@ -1,0 +1,41 @@
+# Arguments to configurate the assembly of the Pleiotropy Decomposition Pipeline #
+
+source "./config/pipeline_arguments.txt"
+
+#=====================================DO NOT MODIFY AFTER THAT=====================================
+
+# Input
+## SUPERGNOVA
+source "./config/SUPERGNOVA_arguments.txt"
+supergnova_out="$out_dir/output/@.txt"
+
+## HDL-L
+source "./config/HDL_arguments.txt"
+hdll_out="$out_dir-L/output/@.csv"
+
+## FactorGo
+source "./config/FactorGo_arguments.txt"
+factorgo_out="$out.Wm.tsv.gz"
+factorgo_snps=$zscore
+
+## GFA
+source "./config/GFA_arguments.txt"
+gfa_out=$loadings
+gfa_snps=$snps
+
+## GLEANR
+source "./config/GLEANR_arguments.txt"
+gleanr_out=$loadings
+gleanr_snps=$betas
+
+## GUIDE
+source "./config/GUIDE_arguments.txt"
+guide_out=$loadings
+guide_snps=$zscore
+
+# Output
+final_assembly="./res/$prefix/$prefix.assembly.csv"
+summary_corr="./res/$prefix/$prefix.summary_corr.assembly.csv"
+assembly_corr="./res/$prefix/$prefix.corr.assembly.csv"
+corr_out="./res/$prefix/$prefix.heatmap.png"
+corr_cluster_out="./res/$prefix/$prefix.clustered_heatmap.png"

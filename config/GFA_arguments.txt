@@ -1,0 +1,93 @@
+# Arguments to configurate the use of GFA #
+
+source "./config/pipeline_arguments.txt"
+
+# Parameters
+sample_size_tol=0.1
+r2_thresh=0.01
+clump_kb=1000
+p_thresh=0.05
+ld_prioritization="pvalue" # "pvalue" or "rank"
+cond_num=1000
+cor_clust=1
+seed=1
+
+#=====================================DO NOT MODIFY AFTER THAT=====================================
+
+# Directories
+data_dir="./data/GFA"
+out_dir="$results_dir/GFA"
+zmat_dir="$data_dir/zmat"
+
+# Parameters strings
+function check_parameters() {
+    if (( ${#parameters_values[@]} ))
+    then
+        parameters=".$(IFS=. ; echo "${parameters_values[*]}")"
+    else
+        parameters=""
+    fi
+    echo $parameters
+}
+parameters_values=()
+
+## Sample size tolerance
+if [[ "$sample_size_tol" != "0.1" ]]
+    then
+        parameters_values+=("nthresh_$sample_size_tol")
+fi
+zmat_combined="$zmat_dir/$prefix.zmat.chr@$(check_parameters).RDS"
+
+if $use_filters
+then
+    ## LD prune parameters
+    if [[ "$r2_thresh" != "0.01" ]]
+        then
+            parameters_values+=("r2_$r2_thresh")
+    fi
+    if [[ "$clump_kb" != "1000" ]]
+        then
+            parameters_values+=("kb_$clump_kb")
+    fi
+    if [[ "$p_thresh" != "0.05" ]]
+        then
+            parameters_values+=("pval_$p_thresh")
+    fi
+
+    if [[ "$ld_prioritization" != "pvalue" ]]
+        then
+            parameters_values+=("prior_$ld_prioritization")
+    fi
+else
+    ## SNP list
+    parameters_values+=("$(basename $snp_path .txt)")
+fi
+zmat_pruned="$zmat_dir/$prefix.zmat_pruned.chr@$(check_parameters).RDS"
+
+## Clustering correlated traits
+if [[ "$cor_clust" != "1" ]]
+    then
+        parameters_values+=("cc_$cor_clust")
+fi
+
+## Run seed
+if [[ "$seed" != "1" ]]
+    then
+        parameters_values+=("seed_$seed")
+fi
+
+## Final string
+parameters=$(check_parameters)
+
+# Output
+## Preprocessing
+description="$data_dir/$prefix.description.csv"
+r_estimate="$data_dir/$prefix.r_estimate.RDS"
+r_corr_clust="$data_dir/$prefix.r_estimate.clustered.RDS"
+snps="$data_dir/$prefix.snps$parameters.txt"
+
+## Running
+out="$out_dir/$prefix.results$parameters.RDS"
+factors="$out_dir/$prefix.factors_matrix$parameters.csv"
+loadings="$out_dir/$prefix.loadings_matrix$parameters.csv"
+pve="$out_dir/$prefix.variance$parameters.csv"

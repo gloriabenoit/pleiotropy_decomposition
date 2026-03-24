@@ -1,0 +1,9 @@
+# Whole directories
+data/*
+env/*
+log/*
+module/*
+res/*
+
+# Pycache
+src/GUIDE/__pycache__

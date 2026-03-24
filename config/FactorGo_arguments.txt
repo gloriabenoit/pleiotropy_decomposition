@@ -1,0 +1,77 @@
+# Arguments to configurate the use of FactorGo #
+
+source "./config/pipeline_arguments.txt"
+
+# Parameters
+## Preprocessing
+p_thresh=5e-8
+min_study=2
+maf_thresh=0.01
+r2_thresh=0.3
+clump_kb=250
+
+## Running
+k=12
+
+#=====================================DO NOT MODIFY AFTER THAT=====================================
+
+# Directories
+data_dir="./data/FactorGo"
+out_dir="$results_dir/FactorGo"
+
+# Parameters strings
+function check_parameters() {
+    if (( ${#parameters_values[@]} ))
+    then
+        parameters=".$(IFS=. ; echo "${parameters_values[*]}")"
+    else
+        parameters=""
+    fi
+    echo $parameters
+}
+parameters_values=()
+
+if $use_filters
+then
+    ## Significance threshold
+    if [[ "$p_thresh" != "5e-8" ]]
+        then
+            parameters_values+=("pval_$p_thresh")
+    fi
+
+    ## Minimum number of studies
+    if [[ "$min_study" != "2" ]]
+        then
+            parameters_values+=("minstudy_$min_study")
+    fi
+    signif_pleio="$data_dir/$prefix.signif_pleio.snp$(check_parameters).txt"
+
+    ## Exclude MHC region
+    no_mhc="$data_dir/$prefix.no_mhc.snp$(check_parameters).txt"
+
+    ## LD prune parameters
+    if [[ "$r2_thresh" != "0.3" ]]
+        then
+            parameters_values+=("r2_$r2_thresh")
+    fi
+    if [[ "$clump_kb" != "250" ]]
+        then
+            parameters_values+=("kb_$clump_kb")
+    fi
+else
+    ## SNP list
+    parameters_values+=("$(basename $snp_path .txt)")
+fi
+
+## Final string
+parameters=$(check_parameters)
+
+# Output
+## Preprocessing
+clump="$data_dir/$prefix.clump$parameters"
+clump_out="$data_dir/$prefix.clump.snp$parameters.txt"
+zscore="$data_dir/$prefix.Zscore$parameters.tsv"
+sample="$data_dir/$prefix.SampleN$parameters.tsv"
+
+## Running
+out=$out_dir/$prefix.results.k$k$parameters

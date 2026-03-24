@@ -1,0 +1,13 @@
+# Arguments to configurate the use of LDSC #
+
+source "./config/pipeline_arguments.txt"
+
+#=====================================DO NOT MODIFY AFTER THAT=====================================
+
+# Directories
+out_dir="$results_dir/LDSC"
+
+# Output
+summary="$out_dir/$prefix.summary.tsv"
+corr_ldsc="$out_dir/$prefix.corr_matrix.csv"
+cov_ldsc="$out_dir/$prefix.cov_matrix.csv"
