@@ -1,8 +1,10 @@
 # Prepare data for FactorGo input #
 
+echo "Starting at: $(date)."
+
 # Input
 source "./config/FactorGo_arguments.txt"
-mapfile -t phenotypes < $phenotypes_path
+mapfile -t studies < $studies_path
 mkdir -p $data_dir
 
 # Method
@@ -12,13 +14,13 @@ then
 
     ## Step 1: select pleiotropic SNPs
     echo "Selecting significant pleiotropic variants."
-    python3 ./src/FactorGo/select_significant_pleiotropic_snps.py $ref_data_dir $phenotypes_path $p_thresh $min_study $signif_pleio
+    python3 ./src/FactorGo/select_significant_pleiotropic_variants.py $studies_path $ref_data_dir $p_thresh $min_study $signif_pleio
 
     ## Step 2: LD prune
     echo "LD pruning."
     files=()
-    for pheno in "${phenotypes[@]}"; do
-        files+=("$ref_data_dir/${pheno}.txt")
+    for study in "${studies[@]}"; do
+        files+=("$ref_data_dir/${study}.txt")
     done
     clump_input=$(IFS=, ; echo "${files[*]}")
 
@@ -35,11 +37,12 @@ then
 
     ## Step 3: format input files
     echo "Formatting input files."
-    python3 ./src/FactorGo/format_input.py $pheno_zscore_out $pheno_sample_out $clump_out $zscore $sample
+    python3 ./src/FactorGo/format_input.py $all_sample $all_zscore $clump_out $sample $zscore
 else
     echo "Selecting specific SNPs as input"
 
     echo "Formatting input files."
-    python3 ./src/FactorGo/format_input.py $pheno_zscore_out $pheno_sample_out $snp_path $zscore $sample
+    python3 ./src/FactorGo/format_input.py $all_sample $all_zscore $input_variants $sample $zscore
 fi
 
+echo "Ending at: $(date)."

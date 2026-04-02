@@ -10,6 +10,5 @@ n_jobs=$(wc -l < $description)
 # Method
 sbatch -p $slurm_p \
        --array=1-$n_jobs%20 \
-       --output="./log/HDL/$prefix.run.%A_%a.out" \
-       --error="./log/HDL/$prefix.run.%A_%a.err" \
+       --output="./log/$prefix/HDL/run-%A/%a.log" \
        ./src/HDL/parallelize_run.sh

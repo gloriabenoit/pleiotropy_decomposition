@@ -5,55 +5,126 @@ import sys
 import numpy as np
 import polars as pl
 
-def read_phenotypes(filename):
-    """Read list of phenotypes."""
-    with open(filename, 'r') as phenotypes:
-        return [line.strip() for line in phenotypes]
+def read_list_in_file(filename):
+    """Read list of item in file.
 
-def format_effect(data, snp_list, phenotypes, out):
-    """Format effect sizes matrix."""
-    df = (
-        data.filter(pl.col("rsID").is_in(snp_list))
+    Parameters
+    ----------
+    filename : str
+        File path.
+
+    Returns
+    -------
+    list
+        Found items.
+    """
+    with open(filename, 'r') as file_in:
+        return [line.strip() for line in file_in]
+
+def format_effect(df, variants, output):
+    """Format GLEANR effect sizes matrix.
+
+    Parameters
+    ----------
+    df : polars dataframe
+        Variants as rows and information as columns:
+        rsID,
+        {Study} (Z-scores) for all studies.
+    variants : list
+        Input variants.
+    output : str
+        Effect sizes matrix output path.
+
+    Returns
+    -------
+    single-space-separated file
+        Variants as rows and information as columns:
+        SNP,
+        {Study} (Effect sizes) for all studies.
+    polars dataframe
+        Variants as rows and information as columns:
+        SNP,
+        {Study} (Effect sizes) for all studies.
+    """
+    effect = (
+        df.filter(pl.col("rsID").is_in(variants))
         .rename({"rsID": "SNP"})
         .drop_nulls()
         )
-    df.write_csv(out,
+
+    effect.write_csv(output,
                  separator=' ',
                  null_value="NA")
-    return df
 
-def format_se(data, traits, out):
-    """Format standard error estimates matrix."""
-    n_rows, n_cols = data.shape
-    df = pl.DataFrame(np.ones((n_rows, n_cols - 1)),
-                      schema=traits)
-    df = pl.concat([data.select("SNP"), df], how="horizontal")
-    df.write_csv(out,
+    return effect
+
+def format_se(df, output):
+    """Format standard error estimates matrix.
+
+    Parameters
+    ----------
+    df : polars dataframe
+        Variants as rows and information as columns:
+        SNP,
+        {Study} (Effect sizes) for all studies.
+    output : str
+        Standard error estimates matrix output path.
+
+    Returns
+    -------
+    single-space-separated file
+        Variants as rows and information as columns:
+        SNP,
+        {Study} (Standard error estimates=1) for all studies.
+    """
+    n_rows, n_cols = df.shape
+    se = pl.DataFrame(np.ones((n_rows, n_cols - 1)),
+                      schema=df.columns[1:])
+    se = pl.concat([df.select("SNP"), se], how="horizontal")
+    se.write_csv(output,
               separator=' ',
                  null_value="NA")
 
-def format_corr(cov_data, out):
-    """Format correlation matrix."""
-    df = (
-        pl.read_csv(cov_data, has_header=True)
+def format_corr(df, output):
+    """Format correlation matrix.
+
+    Parameters
+    ----------
+    df : polars dataframe
+        Correlation matrix.
+    output : str
+        Correlation matrix output path.
+
+    Returns
+    -------
+    single-space-separated file
+        Correlation matrix.
+    """
+    corr = (
+        pl.read_csv(df, has_header=True)
         .drop("")
         )
 
-    df.write_csv(out,
+    corr.write_csv(output,
                  separator=' ',
                  null_value="NA")
 
 if __name__ == "__main__":
     # Parameters
-    _, PHENOTYPES_PATH, JASS_SUMSTAT_PATH, COV_PATH = sys.argv[:-4]
-    CLUMP_OUT, EFFECT_OUT, SE_OUT, C_OUT = sys.argv[-4:]
-    PHENOTYPES = read_phenotypes(PHENOTYPES_PATH)
-    DATA = pl.read_csv(JASS_SUMSTAT_PATH)
+    _, ALL_ZSCORE, COV_PATH = sys.argv[:3]
+    INPUT_VARIANTS, EFFECT_OUT, SE_OUT, C_OUT = sys.argv[3:]
+    ZSCORES = pl.read_csv(ALL_ZSCORE)
 
     # Selection
-    SELECTED_SNP = read_phenotypes(CLUMP_OUT)
+    print("Reading final variant selection.")
+    VARIANTS = read_list_in_file(INPUT_VARIANTS)
 
     # Method
-    effect_matrix = format_effect(DATA, SELECTED_SNP, PHENOTYPES, EFFECT_OUT)
-    format_se(effect_matrix, PHENOTYPES, SE_OUT)
+    print("Formatting effect sizes matrix.")
+    effect_matrix = format_effect(ZSCORES, VARIANTS, EFFECT_OUT)
+
+    print("Formatting standard error estimates matrix.")
+    format_se(effect_matrix, SE_OUT)
+
+    print("Formatting correlation matrix.")
     format_corr(COV_PATH, C_OUT)

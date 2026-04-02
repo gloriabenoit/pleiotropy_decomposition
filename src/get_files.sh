@@ -18,7 +18,7 @@ unzip ./data/HDL-L/bim.zip -d ./data/HDL-L
 unzip ./data/HDL-L/LD.zip -d ./data/HDL-L
 rm ./data/HDL-L/bim.zip ./data/HDL-L/LD.zip
 
-Rscript ./src/common/regions.R $local_panel_dir $regions_out
+Rscript ./src/common/regions.R $local_panel_dir $regions
 
 module unload R/4.4.0
 
@@ -38,5 +38,5 @@ for c in $(seq 1 22);
 do
     out=${partition/\@/$c}
     echo -e "$new_header" > $out
-    cat $regions_out | grep "^[0-9]*,$c," | awk -F',' -v OFS='\t' '{print $2, $4, $5}' >> $out
+    cat $regions | grep "^[0-9]*,$c," | awk -F',' -v OFS='\t' '{print $2, $4, $5}' >> $out
 done

@@ -2,17 +2,17 @@
 
 # Input
 ## File prefix
-prefix="cardiovascular_subset"
+prefix="cancer_subset"
 
-## List of phenotype to analyze
-phenotypes_path="./data/$prefix.txt"
+## List of studies to analyze
+studies_path="./data/$prefix.txt"
 
 ## Path to JASS results
-jass_dir="/pasteur/helix/projects/GGS_WKD/PROJECT_COPD/1._DATA/freeze1_7_imputed/results_file"
-meta_data_path="/pasteur/helix/projects/GGS_WKD/PROJECT_COPD/WKD_Gloria/freeze_1.7/freeze1_7.tsv"
-ref_data_dir="$jass_dir/harmonized_GWAS_1_file_EUR_2026-02-23"
-corr_path="$jass_dir/Correlation_matrices/Correlation_matrix_genetic_EUR_2026-02-23.csv"
-cov_path="$jass_dir/Correlation_matrices/Covariance_matrix_H0_EUR_2026-02-23.csv"
+jass_dir="/pasteur/helix/projects/GGS_WKD/PROJECT_COPD/1._DATA/freeze2_0_imputed/results_file"
+meta_data_path="/pasteur/helix/projects/GGS_WKD/PROJECT_COPD/WKD_Gloria/freeze2_0/freeze2_0.tsv"
+ref_data_dir="$jass_dir/harmonized_GWAS_1_file_EUR_2026-03-27"
+corr_path="$jass_dir/Correlation_matrices/Correlation_matrix_genetic_EUR_2026-03-27.csv"
+cov_path="$jass_dir/Correlation_matrices/Covariance_matrix_H0_EUR_2026-03-27.csv"
 
 ## Path to LD reference panel
 ref_ld="/pasteur/helix/projects/GGS_WKD/DATA_1000G/Panels/EUR/All_ensemble_1000G_hg38_EUR_all_chr"
@@ -25,11 +25,11 @@ mhc_end=33480577
 ## SLURM partition to use
 slurm_p="common"
 
-## Use preprocessing filters or list of SNPs
+## Use preprocessing filters or list of variants
 use_filters=false
 
-## List of SNPs to use as input
-snp_path="/pasteur/helix/projects/GGS_WKD/PROJECT_COPD/WKD_Gloria/test_clump/$prefix.snp_list.txt"
+## List of variants to use as input
+input_variants="/pasteur/helix/projects/GGS_WKD/PROJECT_COPD/WKD_Gloria/clump_input_snps/$prefix.snp_list.txt"
 
 #=====================================DO NOT MODIFY AFTER THAT=====================================
 
@@ -38,9 +38,9 @@ results_dir="./res/$prefix"
 
 # Common files
 mhc_snps="./data/$(basename $ref_ld).mhc_region"
-pheno_sample_out="./data/$prefix.sample.csv"
-pheno_zscore_out="./data/$prefix.zscore.csv"
-regions_out="./data/regions.csv"
-if [ -f $regions_out ]; then
-   total_region=$(echo "$(cat $regions_out | wc -l) - 1" | bc -l)
+all_sample="./data/$prefix.sample.csv"
+all_zscore="./data/$prefix.zscore.csv"
+regions="./data/regions.csv"
+if [ -f $regions ]; then
+   total_region=$(echo "$(cat $regions | wc -l) - 1" | bc -l)
 fi

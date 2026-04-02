@@ -1,9 +1,10 @@
 # Prepare data for SUPERGNOVA input #
 
+echo "Starting at: $(date)."
+
 # Input
-# source "./config/HDL_arguments.txt"
 source "./config/SUPERGNOVA_arguments.txt"
-mapfile -t phenotypes < $phenotypes_path
+mapfile -t studies < $studies_path
 mkdir -p $data_dir
 
 # Method
@@ -35,22 +36,16 @@ echo "Formatting input summary statistics."
 mkdir -p $data_dir/sumstats
 
 new_header="CHR\tSNP\tpos\tA1\tA2\tZ\tP\tN"
-for pheno in "${phenotypes[@]}"
+for study in "${studies[@]}"
 do
-    out="$data_dir/sumstats/$pheno.txt"
+    out="$data_dir/sumstats/$study.txt"
     echo -e "$new_header" > $out
-    tail -n +2 "$ref_data_dir/$pheno.txt" >> $out
-
-    # if $use_filters
-    # then
-    #     python3 ./src/SUPERGNOVA/format_input.py $ref_data_dir/$pheno.txt $out
-    # else
-    #     echo "Selecting specific SNPs as input"
-    #     python3 ./src/SUPERGNOVA/format_input.py $ref_data_dir/$pheno.txt $out $snp_path
-    # fi
+    tail -n +2 "$ref_data_dir/$study.txt" >> $out
 
 done
 
 ## Step 3: create description file
 echo "Creating description file."
-python3 ./src/SUPERGNOVA/create_description_file.py $phenotypes_path $pheno_sample_out $description
+python3 ./src/SUPERGNOVA/create_description_file.py $studies_path $all_sample $sumstat $pair $description
+
+echo "Ending at: $(date)."

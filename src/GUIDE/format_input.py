@@ -4,33 +4,64 @@ import sys
 
 import polars as pl
 
-def read_phenotypes(filename):
-    """Read list of phenotypes."""
-    with open(filename, 'r') as phenotypes:
-        return [line.strip() for line in phenotypes]
+def read_list_in_file(filename):
+    """Read list of item in file.
 
-def format_zscore(data, out, snp_list=""):
-    """Format Zscore file."""
-    df = data.drop_nulls()
+    Parameters
+    ----------
+    filename : str
+        File path.
 
-    if snp_list:
-        df = df.filter(pl.col("rsID").is_in(snp_list))
+    Returns
+    -------
+    list
+        Found items.
+    """
+    with open(filename, 'r') as file_in:
+        return [line.strip() for line in file_in]
 
-    df.write_csv(out)
+def format_effect(df, output, variants=""):
+    """Format GUIDE effects file.
+    
+    Parameters
+    ----------
+    df : polars dataframe
+        Variants as rows and information as columns:
+        rsID,
+        {Study} (Z-scores) for all studies.
+    output : str
+        Z-score matrix output path.
+    variants : list
+        Input variants (Default is empty).
+    
+    Returns
+    -------
+    csv file
+        Variants as rows and information as columns:
+        rsID,
+        {Study} (Effects) for all studies.
+    """
+    effect = df.drop_nulls()
+
+    if variants:
+        effect = effect.filter(pl.col("rsID").is_in(variants))
+
+    effect.write_csv(output)
 
 if __name__ == "__main__":
     # Parameters
-    _, JASS_SUMSTAT, ZSCORE_OUT = sys.argv[:3]
+    _, ALL_ZSCORE, ZSCORE_OUT = sys.argv[:3]
     if len(sys.argv) == 4:
-        SNP_LIST = sys.argv[3]
+        INPUT_VARIANTS = sys.argv[3]
     else:
-        SNP_LIST = ""
-    DATA = pl.read_csv(JASS_SUMSTAT)
+        INPUT_VARIANTS = ""
+    ZSCORES = pl.read_csv(ALL_ZSCORE)
+
+    # Selection
+    if INPUT_VARIANTS:
+        VARIANTS = read_list_in_file(INPUT_VARIANTS)
+    else:
+        VARIANTS=""
 
     # Method
-    if SNP_LIST:
-        SELECTED_SNP = read_phenotypes(SNP_LIST)
-    else:
-        SELECTED_SNP=""
-
-    format_zscore(DATA, ZSCORE_OUT, snp_list=SELECTED_SNP)
+    format_effect(ZSCORES, ZSCORE_OUT, variants=VARIANTS)

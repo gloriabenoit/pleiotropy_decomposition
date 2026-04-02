@@ -1,17 +1,44 @@
-"""Save sample sizes and zscores for selected phenotypes."""
+"""Save sample sizes and zscores for input studies."""
 
 import sys
+
 from functools import reduce
 
 import polars as pl
 
-def read_phenotypes(filename):
-    """Read list of phenotypes."""
-    with open(filename, 'r') as phenotypes:
-        return [line.strip() for line in phenotypes]
+def read_list_in_file(filename):
+    """Read list of item in file.
 
-def read_sample_sizes(phenotypes, filename):
-    """Read JASS meta data file."""
+    Parameters
+    ----------
+    filename : str
+        File path.
+
+    Returns
+    -------
+    list
+        Found items.
+    """
+    with open(filename, 'r') as file_in:
+        return [line.strip() for line in file_in]
+
+def read_sample_sizes(studies, filename):
+    """Read study sample size from JASS meta data file.
+
+    Parameters
+    ----------
+    studies : list
+        Input studies.
+    filename : str
+        JASS meta data path.
+
+    Returns
+    -------
+    polars dataframe
+        Studies as rows and information as columns:
+        ID (Study name),
+        N (sample size).
+    """
     keep_col = ["filename", "Consortium", "Outcome", "Nsample"]
     df = pl.read_csv(filename,
                           separator="\t",
@@ -27,10 +54,10 @@ def read_sample_sizes(phenotypes, filename):
         )).alias("ID")
     )
 
-    df = df.filter(pl.col("ID").is_in(phenotypes))
+    df = df.filter(pl.col("ID").is_in(studies))
 
     # Reorder lines
-    order_map = {value: idx for idx, value in enumerate(phenotypes)}
+    order_map = {study: idx for idx, study in enumerate(studies)}
     df = df.with_columns(
         pl.col("ID")
         .replace(order_map)
@@ -44,10 +71,26 @@ def read_sample_sizes(phenotypes, filename):
 
     return df
 
-def read_zscores(phenotypes, directory):
-    """Read JASS results to aggregate all zscores."""
+def read_zscores(studies, directory):
+    """Read Z-scores from JASS cleaned GWAS.
+
+    Parameters
+    ----------
+    studies : list
+        Input studies.
+    directory : str
+        JASS cleaned GWAS directory.
+
+    Returns
+    -------
+    polars dataframe
+        Variants as rows and information as columns:
+        rsID,
+        {Study} (Z-scores) for all studies.
+    """
     dfs = []
-    for filename in phenotypes:
+    for filename in studies:
+        print(filename)
         df = (
             pl.read_csv(f"{directory}/{filename}.txt", separator="\t")
             .select(["rsID", "Z"])
@@ -63,17 +106,18 @@ def read_zscores(phenotypes, directory):
     )
     return df_final
 
-def save_common_files(samples, zscores, pheno_sample_out, pheno_zscore_out):
-    """Save phenotypes info and zscores."""
-    samples.write_csv(pheno_sample_out)
-    zscores.write_csv(pheno_zscore_out)
-
 if __name__ == "__main__":
     # Parameters
-    _, PHENOTYPES_PATH, META_DATA, HARMONIZED_DIR, PHENO_SAMPLE_OUT, PHENO_ZSCORE_OUT = sys.argv
+    _, STUDIES_PATH, META_DATA, REF_DATA_DIR, ALL_SAMPLE, ALL_ZSCORE = sys.argv
 
-    PHENOTYPES = read_phenotypes(PHENOTYPES_PATH)
+    STUDIES = read_list_in_file(STUDIES_PATH)
 
-    samples = read_sample_sizes(PHENOTYPES, META_DATA)
-    zscores = read_zscores(PHENOTYPES, HARMONIZED_DIR)
-    save_common_files(samples, zscores, PHENO_SAMPLE_OUT, PHENO_ZSCORE_OUT)
+    # Sample sizes
+    print("Reading sample sizes.")
+    samples = read_sample_sizes(STUDIES, META_DATA)
+    samples.write_csv(ALL_SAMPLE)
+
+    # Z-scores
+    print("Reading Z-scores.")
+    zscores = read_zscores(STUDIES, REF_DATA_DIR)
+    zscores.write_csv(ALL_ZSCORE)

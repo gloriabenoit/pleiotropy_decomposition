@@ -46,7 +46,7 @@ then
     fi
 else
     ## SNP list
-    parameters_values+=("$(basename $snp_path .txt)")
+    parameters_values+=("$(basename $input_variants .txt)")
 fi
 
 ## Final string

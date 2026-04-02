@@ -4,37 +4,85 @@ import sys
 
 import polars as pl
 
-def read_phenotypes(filename):
-    """Read list of phenotypes."""
-    with open(filename, 'r') as phenotypes:
-        return [line.strip() for line in phenotypes]
+def read_list_in_file(filename):
+    """Read list of item in file.
 
-def format_zscore(data, snp_list, out):
-    """Format Zscore file."""
-    df = data.filter(pl.col("rsID").is_in(snp_list))
-    df = df.rename({"rsID": "rsid"})
-    df = df.drop_nulls()
+    Parameters
+    ----------
+    filename : str
+        File path.
 
-    df.write_csv(out,
-                 separator='\t')
+    Returns
+    -------
+    list
+        Found items.
+    """
+    with open(filename, 'r') as file_in:
+        return [line.strip() for line in file_in]
 
-def format_sample(data, out):
-    """Format SampleN file."""
-    df = data.with_columns([data["N"].cast(pl.Int64)])
+def format_sample(df, output):
+    """Format FactorGo Sample size file.
 
-    df.write_csv(out,
-                 separator='\t')
+    Parameters
+    ----------
+    df : polars dataframe
+        Studies as rows and information as columns:
+        ID (Study name),
+        N (Sample size).
+    output : str
+        Correlation matrix output path.
+
+    Returns
+    -------
+    file
+        Studies as rows and sample sizes as column:
+        N.
+    """
+    samples = df.with_columns([df["N"].cast(pl.Int64)])
+
+    samples.write_csv(output)
+
+def format_zscore(df, variants, output):
+    """Format FactorGo Z-score file.
+
+    Parameters
+    ----------
+    df : polars dataframe
+        Variants as rows and information as columns:
+        rsID,
+        {Study} (Z-scores) for all studies.
+    variants : list
+        Input variants.
+    output : str
+        Z-score matrix output path.
+
+    Returns
+    -------
+    tsv file
+        Variants as rows and information as columns:
+        rsid,
+        {Study} (Z-scores) for all studies.
+    """
+    zscore = df.filter(pl.col("rsID").is_in(variants))
+    zscore = zscore.rename({"rsID": "rsid"})
+    zscore = zscore.drop_nulls()
+
+    zscore.write_csv(output, separator='\t')
 
 if __name__ == "__main__":
     # Parameters
-    _, JASS_SUMSTAT, JASS_SAMPLE, SNP_LIST = sys.argv[:-2]
-    ZSCORE_OUT, SAMPLE_N_OUT = sys.argv[-2:]
-    DATA = pl.read_csv(JASS_SUMSTAT)
-    INFO = pl.read_csv(JASS_SAMPLE, columns=["N"])
+    _, ALL_SAMPLE, ALL_ZSCORE, INPUT_VARIANTS = sys.argv[:4]
+    SAMPLE_OUT, ZSCORE_OUT = sys.argv[4:]
+    SAMPLES = pl.read_csv(ALL_SAMPLE, columns=["N"])
+    ZSCORES = pl.read_csv(ALL_ZSCORE)
 
     # Selection
-    SELECTED_SNP = read_phenotypes(SNP_LIST)
+    print("Reading final variant selection.")
+    VARIANTS = read_list_in_file(INPUT_VARIANTS)
 
     # Method
-    format_zscore(DATA, SELECTED_SNP, ZSCORE_OUT)
-    format_sample(INFO, SAMPLE_N_OUT)
+    print("Formatting sample size file.")
+    format_sample(SAMPLES, SAMPLE_OUT)
+
+    print("Formatting Z-score file.")
+    format_zscore(ZSCORES, VARIANTS, ZSCORE_OUT)

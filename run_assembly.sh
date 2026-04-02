@@ -6,16 +6,21 @@ source ./env/processing/bin/activate
 
 # Summarize local correlation results
 ## HDL
-# sh ./src/HDL/compute_results.sh
-# sh ./src/HDL-L/compute_results.sh
+echo "Summarizing HDL results."
+sh ./src/HDL/summarize.sh |& tee ./log/$prefix/HDL/summarize.log
+
+## HDL-L
+echo "Summarizing HDL-L results."
+sh ./src/HDL-L/summarize.sh |& tee ./log/$prefix/HDL-L/summarize.log
 
 ## SUPERGNOVA
-# sh ./src/SUPERGNOVA/compute_results.sh
+echo "Summarizing SUPERGNOVA results."
+sh ./src/SUPERGNOVA/summarize.sh |& tee ./log/$prefix/SUPERGNOVA/summarize.log
 
 # Assemble all results
-sbatch -p $slurm_p \
-       -o "./log/$prefix.assembly.%A.log" \
-       ./src/assembly/assemble_res.sh
+echo "Assembling all results."
+sbatch -p $slurm_p -o "./log/$prefix/assembly.%A.log" \
+       ./src/assembly/assembly.sh
 
 deactivate
 module unload Python/3.13.2

@@ -1,3 +1,5 @@
+# Read HDL-L regions information.
+
 args = commandArgs(trailingOnly=TRUE)
 
 local_panel_dir <- args[1]

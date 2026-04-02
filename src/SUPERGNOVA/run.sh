@@ -10,6 +10,5 @@ n_jobs=$(wc -l < $description)
 # Method
 sbatch -p $slurm_p \
        --array=1-$n_jobs%20 \
-       --output="./log/SUPERGNOVA/$prefix.run_%A_%a.out" \
-       --error="./log/SUPERGNOVA/$prefix.run_%A_%a.err" \
+       --output="./log/$prefix/SUPERGNOVA/run-%A/%a.log" \
        ./src/SUPERGNOVA/parallelize_run.sh

@@ -1,6 +1,6 @@
 # Run FactorGo #
 
-echo "Started running at: $(date)."
+echo "Starting at: $(date)."
 
 # Input
 source "./config/FactorGo_arguments.txt"
@@ -14,4 +14,4 @@ factorgo \
     --scale \
     -o $out
 
-echo "Ended running at: $(date)."
+echo "Ending at: $(date)."

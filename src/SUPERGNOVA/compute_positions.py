@@ -1,4 +1,4 @@
-"""Get positions from other bim file."""
+"""Update BIM file positions with genetic map."""
 
 import sys
 
@@ -6,51 +6,83 @@ import polars as pl
 import numpy as np
 
 def interpolate_cm(pos, map_positions, map_cms):
-    # before the first map position
+    """Interpolate centimorgan position from genetic map.
+
+    Parameters
+    ----------
+    pos : int
+        Variant position.
+    map_positions : numpy array
+        All positions in the map.
+    map_cms : numpy array
+        All centimorgan positions in the map.
+
+    Returns
+    -------
+    float
+        Interpolated centimorgan position.
+    """
+    # Outside of map
     if pos <= map_positions[0]:
         return map_cms[0]
-    # after the last map position
+
     if pos >= map_positions[-1]:
         return map_cms[-1]
-    # find interval
+
+    # Find position interval
     idx = np.searchsorted(map_positions, pos) - 1
     x1, x2 = map_positions[idx], map_positions[idx + 1]
     y1, y2 = map_cms[idx], map_cms[idx + 1]
-    # linear interpolation
+
+    # Linear interpolation
     return y1 + (y2 - y1) * (pos - x1) / (x2 - x1)
 
-def prepare_data(filename, reference, chrom):
-    """Add positions to bim file from reference."""
+def compute_positions(filename, genetic_map, chrom):
+    """Compute BIM file positions from genetic map.
+
+    Parameters
+    ----------
+    filename : str
+        BIM file path.
+    genetic_map : str
+        Genetic map path.
+    chrom : int
+        Chromosome number.
+
+    Returns
+    -------
+    tsv file
+        BIM file with updated positions.
+    """
+    # BIM file
     bim = pl.read_csv(filename,
                       separator='\t',
                       has_header=False,
                       new_columns=["chrom", "rsid", "cm",
                                    "pos", "ref", "alt"])
-    map_data = pl.read_csv(reference,
+
+    # Genetic map
+    map_data = pl.read_csv(genetic_map,
                            separator=' ', has_header=True,
                            new_columns=["chr", "pos",
                                         "comb", "cms"])
-
     map_data = map_data.filter(pl.col("chr") == chrom)
-
     map_pos = map_data['pos'].to_numpy()
     map_cms = map_data['cms'].to_numpy()
 
-    return bim, map_pos, map_cms
-
-def compute_pos(filename, reference, chrom):
-    bim, map_pos, map_cms = prepare_data(filename, reference, chrom)
-
+    # Interpolate position
     bim = bim.with_columns(
         pl.col("pos").map_elements(
             lambda p: interpolate_cm(p, map_pos, map_cms),
             return_dtype=pl.Float64,
         ).alias("cm")
     )
+
+    # Save
     bim.write_csv(filename, separator="\t", include_header=False)
 
 if __name__ == "__main__":
     # Parameters
-    _, FILENAME, REFERENCE, CHROM = sys.argv
+    _, BIM, GENETIC_MAP, CHROM = sys.argv
 
-    compute_pos(FILENAME, REFERENCE, int(CHROM))
+    compute_positions(BIM, GENETIC_MAP, int(CHROM))

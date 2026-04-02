@@ -35,5 +35,5 @@ description="$data_dir/$prefix.description.txt"
 sumstat="$data_dir/sumstats/@$parameters"
 
 ## Running
+pair="$out_dir/output/@.@$parameters.txt"
 summary="$out_dir/$prefix.summary$parameters.tsv"
-summary_local="$out_dir-L/$prefix.summary$parameters.tsv"

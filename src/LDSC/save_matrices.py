@@ -4,24 +4,44 @@ import sys
 
 import polars as pl
 
-def read_phenotypes(filename):
-    """Read list of phenotypes."""
-    with open(filename, 'r') as phenotypes:
-        return [line.strip() for line in phenotypes]
+def read_list_in_file(filename):
+    """Read list of item in file.
 
-def subset_df(df, phenotypes):
-    """Subset phenotypes from global matrix."""
-    # Select phenotypes
+    Parameters
+    ----------
+    filename : str
+        File path.
+
+    Returns
+    -------
+    list
+        Found items.
+    """
+    with open(filename, 'r') as file_in:
+        return [line.strip() for line in file_in]
+
+def subset_df(studies, df):
+    """Subset studies from matrix.
+    
+    Parameters
+    ----------
+    studies : list
+        Input studies.
+    df : polars dataframe
+        Matrix.
+    """
+    # Select studies
     df = (
-        df.filter(pl.col("").is_in(phenotypes))
-        .select([""] + phenotypes)
+        df.filter(pl.col("").is_in(studies))
+        .select([""] + studies)
         )
 
     # Reorder
-    order_map = {k: int(i) for i, k in enumerate(phenotypes)}
+    order_map = {k: int(i) for i, k in enumerate(studies)}
     df = (
         df.with_columns(
-            pl.col("").replace_strict(order_map, return_dtype=pl.Int16).alias("order")
+            pl.col("").replace_strict(order_map,
+                                      return_dtype=pl.Int16).alias("order")
         )
         .sort("order")
         .drop("order")
@@ -29,8 +49,23 @@ def subset_df(df, phenotypes):
 
     return df
 
-def save_matrix(filename, phenotypes, out):
-    """Save LDSC output as a matrix."""
+def save_ldsc_matrix(studies, filename, out):
+    """Save LDSC output as a matrix.
+
+    Parameters
+    ----------
+    studies : list
+        Input studies.
+    filename : str
+        LDSC global matrix path.
+    out : str
+        LDSC matrix output path.
+
+    Returns
+    -------
+    csv file
+        LDSC matrix of selected studies.
+    """
     columns = pl.read_csv(filename,
                           has_header=True,
                           separator="\t",
@@ -42,21 +77,23 @@ def save_matrix(filename, phenotypes, out):
     df = pl.read_csv(filename,
                      separator="\t",
                      has_header=True,
-                     columns = [""] + phenotypes,
+                     columns = [""] + studies,
                      schema=schema
     )
 
-    df = subset_df(df, phenotypes)
+    df = subset_df(studies, df)
     df.write_csv(out)
 
 if __name__ == "__main__":
     # Parameters
-    _, PHENOTYPES_PATH, CORR_PATH, COV_PATH, CORR_OUT, COV_OUT = sys.argv
+    _, STUDIES_PATH, CORR_PATH, COV_PATH, CORR_OUT, COV_OUT = sys.argv
 
-    PHENOTYPES = read_phenotypes(PHENOTYPES_PATH)
+    STUDIES = read_list_in_file(STUDIES_PATH)
 
     # Correlation
-    save_matrix(CORR_PATH, PHENOTYPES, CORR_OUT)
+    print("Saving correlation matrix.")
+    save_ldsc_matrix(STUDIES, CORR_PATH, CORR_OUT)
 
     # Covariance
-    save_matrix(COV_PATH, PHENOTYPES, COV_OUT)
+    print("Saving covariance matrix.")
+    save_ldsc_matrix(STUDIES, COV_PATH, COV_OUT)

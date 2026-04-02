@@ -17,11 +17,11 @@ pos_map="$data_dir/genetic_map_hg38_withX.txt.gz"
 
 # Output
 ## Preprocessing
-sumstat_in="$data_dir/sumstats/@.txt"
+sumstat="$data_dir/sumstats/@.txt"
 partition="$data_dir/partition/partition.chr@.bed"
 bfiles="$data_dir/bfiles/$bfiles_name.chr@"
 description="$data_dir/$prefix.description.txt"
 
 ## Summary
-sumstat_out="$out_dir/output/@"
+pair="$out_dir/output/@.@.txt"
 summary="$out_dir/$prefix.summary.tsv"

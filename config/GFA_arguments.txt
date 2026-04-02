@@ -60,7 +60,7 @@ then
     fi
 else
     ## SNP list
-    parameters_values+=("$(basename $snp_path .txt)")
+    parameters_values+=("$(basename $input_variants .txt)")
 fi
 zmat_pruned="$zmat_dir/$prefix.zmat_pruned.chr@$(check_parameters).RDS"
 
@@ -84,7 +84,7 @@ parameters=$(check_parameters)
 description="$data_dir/$prefix.description.csv"
 r_estimate="$data_dir/$prefix.r_estimate.RDS"
 r_corr_clust="$data_dir/$prefix.r_estimate.clustered.RDS"
-snps="$data_dir/$prefix.snps$parameters.txt"
+variants="$data_dir/$prefix.variants$parameters.txt"
 
 ## Running
 out="$out_dir/$prefix.results$parameters.RDS"

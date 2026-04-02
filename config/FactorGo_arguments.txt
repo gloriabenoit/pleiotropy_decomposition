@@ -11,7 +11,7 @@ r2_thresh=0.3
 clump_kb=250
 
 ## Running
-k=12
+k=5
 
 #=====================================DO NOT MODIFY AFTER THAT=====================================
 
@@ -60,7 +60,7 @@ then
     fi
 else
     ## SNP list
-    parameters_values+=("$(basename $snp_path .txt)")
+    parameters_values+=("$(basename $input_variants .txt)")
 fi
 
 ## Final string

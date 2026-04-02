@@ -16,26 +16,22 @@ hdll_out="$out_dir-L/output/@.csv"
 ## FactorGo
 source "./config/FactorGo_arguments.txt"
 factorgo_out="$out.Wm.tsv.gz"
-factorgo_snps=$zscore
+factorgo_variants=$zscore
 
 ## GFA
 source "./config/GFA_arguments.txt"
 gfa_out=$loadings
-gfa_snps=$snps
+gfa_variants=$variants
 
 ## GLEANR
 source "./config/GLEANR_arguments.txt"
 gleanr_out=$loadings
-gleanr_snps=$betas
+gleanr_variants=$betas
 
 ## GUIDE
 source "./config/GUIDE_arguments.txt"
 guide_out=$loadings
-guide_snps=$zscore
+guide_variants=$zscore
 
 # Output
 final_assembly="./res/$prefix/$prefix.assembly.csv"
-summary_corr="./res/$prefix/$prefix.summary_corr.assembly.csv"
-assembly_corr="./res/$prefix/$prefix.corr.assembly.csv"
-corr_out="./res/$prefix/$prefix.heatmap.png"
-corr_cluster_out="./res/$prefix/$prefix.clustered_heatmap.png"
