@@ -17,7 +17,7 @@ do
     out=${bfiles/\@/$c}
     if [ ! -f $out.bed ]
     then
-        plink --bfile $ref_ld \
+        plink --bfile $ref_panel \
                 --chr $c \
                 --make-bed \
                 --out $out

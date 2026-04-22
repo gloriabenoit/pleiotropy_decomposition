@@ -2,17 +2,19 @@
 
 source "./config/pipeline_arguments.txt"
 
+# Directories
+global_panel_dir="./data/HDL/UKB_imputed_SVD_eigen99_extraction"
+local_panel_dir="./data/HDL-L/LD/"
+local_bim_dir="./data/HDL-L/bim/"
+
+# Parameters
+nref=335265 # for global_panel_dir
+
 #=====================================DO NOT MODIFY AFTER THAT=====================================
 
 # Directories
 data_dir="./data/HDL"
 out_dir="$results_dir/HDL"
-local_panel_dir="$data_dir-L/LD/"
-local_bim_dir="$data_dir-L/bim/"
-
-# Parameters
-global_panel_dir="$data_dir/UKB_imputed_SVD_eigen99_extraction"
-nref=335265
 
 # Parameters strings
 parameters_values=()

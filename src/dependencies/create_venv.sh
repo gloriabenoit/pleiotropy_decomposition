@@ -4,7 +4,7 @@
 module load Python/3.13.2
 python3 -m venv ./env/processing
 source ./env/processing/bin/activate
-pip install matplotlib numpy polars scipy seaborn
+pip install polars
 deactivate
 module unload Python/3.13.2
 

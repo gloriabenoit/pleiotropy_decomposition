@@ -22,7 +22,7 @@ then
 
     # Step 3: LD prune
     echo "LD pruning."
-    Rscript ./src/GFA/2_ld_prune_chrom_plink.R $ref_ld $zmat_combined $r2_thresh $clump_kb $p_thresh $ld_prioritization $zmat_pruned $snps
+    Rscript ./src/GFA/2_ld_prune_chrom_plink.R $ref_panel $zmat_combined $r2_thresh $clump_kb $p_thresh $ld_prioritization $zmat_pruned $snps
 else
     # Step 3: select variants
     echo "Selecting specific SNPs as input."

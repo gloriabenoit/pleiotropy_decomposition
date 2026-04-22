@@ -2,6 +2,9 @@
 
 source "./config/pipeline_arguments.txt"
 
+# Files
+pos_map="$data_dir/genetic_map_hg38_withX.txt.gz"
+
 # Parameters
 extrapolate_pos=true
 bfiles_name="1G_hg38_EUR"
@@ -12,13 +15,10 @@ bfiles_name="1G_hg38_EUR"
 data_dir="./data/SUPERGNOVA"
 out_dir="$results_dir/SUPERGNOVA"
 
-# Files
-pos_map="$data_dir/genetic_map_hg38_withX.txt.gz"
-
 # Output
 ## Preprocessing
 sumstat="$data_dir/sumstats/@.txt"
-partition="$data_dir/partition/partition.chr@.bed"
+partition="$data_dir/partition/partition.chr@.tsv"
 bfiles="$data_dir/bfiles/$bfiles_name.chr@"
 description="$data_dir/$prefix.description.txt"
 

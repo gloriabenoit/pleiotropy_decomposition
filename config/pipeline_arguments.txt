@@ -15,7 +15,7 @@ corr_path="$jass_dir/Correlation_matrices/Correlation_matrix_genetic_EUR_2026-03
 cov_path="$jass_dir/Correlation_matrices/Covariance_matrix_H0_EUR_2026-03-27.csv"
 
 ## Path to LD reference panel
-ref_ld="/pasteur/helix/projects/GGS_WKD/DATA_1000G/Panels/EUR/All_ensemble_1000G_hg38_EUR_all_chr"
+ref_panel="/pasteur/helix/projects/GGS_WKD/DATA_1000G/Panels/EUR/All_ensemble_1000G_hg38_EUR_all_chr"
 
 # Parameters
 ## MHC region (hg38)
@@ -37,7 +37,7 @@ input_variants="/pasteur/helix/projects/GGS_WKD/PROJECT_COPD/WKD_Gloria/clump_in
 results_dir="./res/$prefix"
 
 # Common files
-mhc_snps="./data/$(basename $ref_ld).mhc_region"
+mhc_snps="./data/$(basename $ref_panel).mhc_region"
 all_sample="./data/$prefix.sample.csv"
 all_zscore="./data/$prefix.zscore.csv"
 regions="./data/regions.csv"

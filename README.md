@@ -1,8 +1,33 @@
-# Pleiotropy decomposition pipeline using GWAS summary statistics
+# Pleiotropy Decomposition Pipeline using GWAS summary statistics
 
 ## Overview
 
 ![Pipeline architecture](./img/pipeline_architecture.png)
+
+## Installation
+
+```bash
+# Download with https
+git clone https://github.com/gloriabenoit/pleiotropy_decomposition.git
+# or ssh
+git clone git@github.com:gloriabenoit/pleiotropy_decomposition.git
+
+cd pleiotropy_decomposition
+```
+
+## Documentation
+
+For more information on:
+
+* The pipeline itself
+* The methods used
+* The package versions
+* The possible parameters
+* And more!
+
+Please check the [official documentation](https://gloriabenoit.github.io/PDP-Docs/).
+
+<!-- 
 
 This pipeline will compute results for a total of **8 methods**:
 
@@ -30,11 +55,10 @@ The pipeline can be divided into separate parts:
 ### Pipeline
 
 ```bash
-# UPDATE WITH GITLAB ? git clone https://gitlab.pasteur.fr/statistical-genetics/jass_suite_pipeline.git
-# download use http address
-git clone https://github.com/mancusolab/FactorGo.git
-# or use ssh agent
-git clone git@github.com:mancusolab/FactorGo.git
+# Download with https
+git clone https://github.com/gloriabenoit/pleiotropy_decomposition.git
+# or ssh
+git clone git@github.com:gloriabenoit/pleiotropy_decomposition.git
 
 cd pleiotropy_decomposition
 ```
@@ -104,4 +128,4 @@ sh run_pipeline.sh
 sh run_assembly.sh
 ```
 
-> As of now, the steps need to be launched manually one after the other once they're complete.
+> As of now, the steps need to be launched manually one after the other once they're complete. -->

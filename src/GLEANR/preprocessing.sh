@@ -22,7 +22,7 @@ then
 
     ## Step 3: LD prune
     echo "LD pruning."
-    plink --bfile $ref_ld \
+    plink --bfile $ref_panel \
         --clump $score_pleio \
         --exclude $mhc_snps.snplist \
         --clump-snp-field rsID \

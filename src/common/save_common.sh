@@ -8,7 +8,7 @@ source "./config/pipeline_arguments.txt"
 # Method
 ## Get MHC region variants to exclude
 echo "List variants in MHC region."
-plink --bfile $ref_ld \
+plink --bfile $ref_panel \
     --chr 6 \
     --from-bp $mhc_start \
     --to-bp $mhc_end \

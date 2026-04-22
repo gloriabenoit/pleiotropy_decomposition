@@ -24,7 +24,7 @@ then
     done
     clump_input=$(IFS=, ; echo "${files[*]}")
 
-    plink --bfile $ref_ld \
+    plink --bfile $ref_panel \
         --clump $clump_input \
         --extract $signif_pleio \
         --exclude $mhc_snps.snplist \
